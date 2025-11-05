@@ -1,0 +1,15 @@
+# Simple test mesh with UVs outside [0,1]
+o TestMesh
+
+# Vertices
+v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 1.0 1.0 0.0
+
+# UV coordinates (some outside 0-1)
+vt 0.0 0.0
+vt 2.0 0.0
+vt 1.0 1.0
+
+# Face (using vertex/uv indices)
+f 1/1 2/2 3/3
