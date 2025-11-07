@@ -25,7 +25,9 @@ def map_range(value: float, left_min: float, left_max: float, right_min: float, 
     return right_min + (value_scaled * right_span)
 
 
-def lerp(start: numpy.ndarray[tuple[float]], end: numpy.ndarray[tuple[float]], t: float) -> numpy.ndarray:
+def lerp(start: numpy.ndarray[list[float]] | float,
+         end: numpy.ndarray[list[float]] | float,
+         t: float) -> numpy.ndarray[list[float]] | float:
     """
     Linearly interpolates between two points.
     :param start: The starting point.
