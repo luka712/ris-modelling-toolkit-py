@@ -11,7 +11,7 @@ v 0.0 1.0 0.0
 # UV coordinates (some outside 0-1)
 vt 0.0 0.0
 vt 2.0 0.0
-vt 0.0 1.0
+vt 0.0 2.0
 
 # Face (using vertex/uv indices)
 f 1/1 2/2 3/3

@@ -1,9 +1,7 @@
 import math
-
-import numpy
 import numpy as np
 
-from ris_modelling_toolkit.src.data import Axis2D, UVBoundaryCoordInfo, UVBoundaryPointInfo
+from ris_modelling_toolkit.src.data import Axis2D, UVEdgeBoundary, UVBoundaryIntersection
 from ris_modelling_toolkit.src.util.math_util import map_range, lerp
 
 
@@ -14,25 +12,44 @@ def find_uv_outside_bounds(
         v1: np.ndarray[list[float]],
         uv0: np.ndarray[list[float]],
         uv1: np.ndarray[list[float]],
-        axis: Axis2D) -> UVBoundaryCoordInfo | None:
+        axis: Axis2D) -> UVEdgeBoundary | None:
     """
-    Find integer boundaries outside [0,1] range between left and right UV coordinate.
-    1. Determine the min and max of the two UV coordinates.
-    2. If both are within [0,1], return None.
-    3. Otherwise, calculate the integer boundaries outside [0,1] that lie between
-    the min and max UVs.
-    4. Return these boundaries as a numpy array.
-    :param index0: The first vertex index of the face.
-    :param index1: The second vertex index of the face.
-    :param v0 : The first 3D vertex of the edge.
-    :param v1 : The second 3D vertex of the edge.
-    :param uv0 : The first vertex UV coordinates.
-    :param uv1 : The second vertex UV coordinates.
-    :param face0: The index of the first face vertex.
-    :param face1: The index of the second face vertex.
-    :param axis: The UV axis (X or Y) for which to check where boundary crossing occurs.
-    :return: The list of integer boundaries outside [0,1] or None.
-    """
+       Detect whether the UV segment between two vertices crosses any integer UV tile boundaries.
+
+       UV coordinates outside the normalized [0, 1] range imply tiled textures. If the UV
+       values at the ends of an edge lie on opposite sides of an integer boundary (e.g.,
+       0.8 → 1.2 crosses U = 1), the mesh must later be split at that boundary to prevent
+       incorrect texture interpolation.
+
+       This function:
+         1. Extracts the UV coordinate on the specified axis (U or V).
+         2. Checks whether the segment spans any integer boundaries.
+         3. If so, returns a `UVEdgeBoundary` describing the boundaries crossed and the
+            geometric and UV data needed for interpolation later.
+         4. If not, returns None.
+
+       Parameters
+       ----------
+       index0, index1 : int
+           The indices of the two vertices forming this mesh edge.
+       v0, v1 : np.ndarray, shape (3,)
+           The 3D positions of the edge endpoints.
+       uv0, uv1 : np.ndarray, shape (2,)
+           The UV coordinates of the edge endpoints.
+       axis : Axis2D
+           Which UV axis (U or V) to analyze.
+
+       Returns
+       -------
+       UVEdgeBoundary or None
+           A boundary descriptor if integer UV boundaries are crossed, otherwise None.
+
+       Notes
+       -----
+       - Only boundaries outside the [0, 1] range are considered.
+       - This function does not compute 3D split points; it only identifies where splits
+         *should* occur. The actual intersection vertex is computed later.
+       """
 
     if len(v0) != 3 or len(v1) != 3:
         raise ValueError("v0 and v1 must be 3D coordinates.")
@@ -73,16 +90,16 @@ def find_uv_outside_bounds(
     if len(result) == 0.0:
         return None
 
-    return UVBoundaryCoordInfo(crossed_edges=np.array(result),
+    return UVEdgeBoundary(crossed_edges=np.array(result),
                                index0=index0, index1=index1,
                                v0=v0, v1=v1,
-                               uv0= uv0, uv1=uv1,
+                               uv0=uv0, uv1=uv1,
                                axis=axis,
                                edge0=uv_coord_min,
                                edge1=uv_coord_max)
 
 
-def compute_uv_boundary_points(boundary_info: UVBoundaryCoordInfo | None) -> list[UVBoundaryPointInfo] | None:
+def compute_uv_boundary_points(boundary_info: UVEdgeBoundary | None) -> list[UVBoundaryIntersection] | None:
     """
     Find 3D points on the edge between points a and b where UV coordinates cross specified boundaries.
     1. For each boundary in out_of_bound_points, map it to a parameter t in [0, 1] based on uv_a and uv_b.
@@ -120,7 +137,7 @@ def compute_uv_boundary_points(boundary_info: UVBoundaryCoordInfo | None) -> lis
         other_coord = lerp(other_uv_coord_edge0, other_uv_coord_edge1, t)
 
         # Create and store the boundary point info. This is information about the 3D point where boundary crossing occurs.
-        boundaries.append(UVBoundaryPointInfo(
+        boundaries.append(UVBoundaryIntersection(
             point=point,
             index0=boundary_info.index0,
             index1=boundary_info.index1,

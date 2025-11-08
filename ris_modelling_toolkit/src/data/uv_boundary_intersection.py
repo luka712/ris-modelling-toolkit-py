@@ -2,14 +2,25 @@ import numpy
 
 from ris_modelling_toolkit.src.data import Axis2D
 
-class UVBoundaryPointInfo:
+class UVBoundaryIntersection:
     """
-    The UVBoundaryPointInfo class represents info about a point in 3D where the UV coordinates cross a [0,1] boundary.
-    It contains the 3D point and the associated UV axis information.
-    This class is used to insert new point into a mesh when UV coordinates go outside the [0,1] range.
-    Holds information about edge0 and edge1 for reference to the original UV coordinates.
-    Value of edges is either U or V coordinate depending on the UV axis.
-    """
+        Represents a newly created vertex where a mesh edge crosses an integer UV tile boundary.
+
+        When UV coordinates extend outside the normalized [0, 1] range, edges may cross
+        boundaries at integer UV values (e.g., U = 1, U = 2, U = -1). To correctly tile
+        and unwrap the mesh, these edges must be split at the exact intersection point in
+        both 3D space and UV space.
+
+        This class stores:
+          - The 3D intersection point on the mesh edge.
+          - The original edge endpoints and indices.
+          - Which UV axis (U or V) was crossed.
+          - The specific UV boundary value (e.g., U = 1, V = -1).
+          - The interpolated coordinate on the *other* UV axis at the split point.
+
+        The information is used later during mesh reconstruction to insert the new vertex
+        and update UVs consistently across splits.
+        """
     def __init__(self,
                  point: numpy.ndarray[list[float]],
                  index0: int, index1: int,
@@ -52,3 +63,10 @@ class UVBoundaryPointInfo:
 
     def __repr__(self):
         return f"BoundaryPoint(point={self.point}, edge0={self.edge0}, edge1={self.edge1}, uv_axis={self.uv_axis}, other_coord_interpolated={self.other_coord_interpolated})"
+
+    def get_point(self) -> numpy.ndarray[list[float]]:
+        """
+        Get the 3D coordinate of the boundary point.
+        :return: The 3D coordinate as a numpy array.
+        """
+        return self.point

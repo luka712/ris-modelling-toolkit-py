@@ -1,6 +1,5 @@
-from .model import split_mesh_at_points, tile_mesh_uvs
+from .model import split_mesh_for_tiled_uvs
 
 __all__ = [
-    "split_mesh_at_points",
-    "tile_mesh_uvs",
+    "split_mesh_for_tiled_uvs",
 ]

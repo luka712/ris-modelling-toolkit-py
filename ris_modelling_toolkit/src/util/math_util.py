@@ -38,10 +38,10 @@ def lerp(start: numpy.ndarray[list[float]] | float,
     return (1 - t) * start + t * end
 
 
-def point_in_triangle(point: np.ndarray[tuple[float]],
-                      v0: np.ndarray[float],
-                      v1: np.ndarray[float],
-                      v2: np.ndarray[float],
+def point_in_triangle(point: np.ndarray[list[float]],
+                      v1: np.ndarray[list[float]],
+                      v2: np.ndarray[list[float]],
+                      v0: np.ndarray[list[float]],
                       tol: float = 1e-8) -> bool:
     """
     Check if a 3D point lies inside a triangle.
@@ -74,5 +74,30 @@ def point_in_triangle(point: np.ndarray[tuple[float]],
     w = (d00 * d21 - d01 * d20) / denom
     u = 1 - v - w
 
-    # Point is inside triangle if all barycentric coords are between 0 and 1
+    # Point is inside triangle if all barycentric cords are between 0 and 1
     return (-tol <= u <= 1 + tol) and (-tol <= v <= 1 + tol) and (-tol <= w <= 1 + tol)
+
+def is_valid_triangle(v0: np.ndarray[list[float]],
+                      v1: np.ndarray[list[float]],
+                      v2: np.ndarray[list[float]],
+                      tol: float = 1e-8) -> bool:
+    """
+    Check if three 3D points form a valid triangle (not degenerate).
+
+    :param v0: np.ndarray of shape (3,), first vertex of the triangle.
+    :param v1: np.ndarray of shape (3,), second vertex of the triangle.
+    :param v2: np.ndarray of shape (3,), third vertex of the triangle.
+    :param tol: Tolerance for numerical precision.
+    :return: True if the points form a valid triangle, False otherwise.
+    """
+
+    if len(v0) != 3 or len(v1) != 3 or len(v2) != 3:
+        raise ValueError("v0, v1, and v2 must be 3D coordinates.")
+
+    # Compute the area of the triangle using the cross product
+    edge1 = v1 - v0
+    edge2 = v2 - v0
+    cross_product = np.cross(edge1, edge2)
+    area = np.linalg.norm(cross_product) / 2.0
+
+    return area > tol
