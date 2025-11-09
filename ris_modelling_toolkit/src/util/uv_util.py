@@ -6,8 +6,6 @@ from ris_modelling_toolkit.src.util.math_util import map_range, lerp
 
 
 def find_uv_outside_bounds(
-        index0: int,
-        index1: int,
         v0: np.ndarray[list[float]],
         v1: np.ndarray[list[float]],
         uv0: np.ndarray[list[float]],
@@ -30,8 +28,6 @@ def find_uv_outside_bounds(
 
        Parameters
        ----------
-       index0, index1 : int
-           The indices of the two vertices forming this mesh edge.
        v0, v1 : np.ndarray, shape (3,)
            The 3D positions of the edge endpoints.
        uv0, uv1 : np.ndarray, shape (2,)
@@ -91,7 +87,6 @@ def find_uv_outside_bounds(
         return None
 
     return UVEdgeBoundary(crossed_edges=np.array(result),
-                               index0=index0, index1=index1,
                                v0=v0, v1=v1,
                                uv0=uv0, uv1=uv1,
                                axis=axis,
@@ -139,8 +134,6 @@ def compute_uv_boundary_points(boundary_info: UVEdgeBoundary | None) -> list[UVB
         # Create and store the boundary point info. This is information about the 3D point where boundary crossing occurs.
         boundaries.append(UVBoundaryIntersection(
             point=point,
-            index0=boundary_info.index0,
-            index1=boundary_info.index1,
             v0=boundary_info.v0,
             v1=boundary_info.v1,
             crossed_edge=edge,

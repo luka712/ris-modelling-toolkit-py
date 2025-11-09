@@ -1,5 +1,5 @@
-from .model import split_mesh_for_tiled_uvs
+from .model import split_geometry_for_tiled_uvs
 
 __all__ = [
-    "split_mesh_for_tiled_uvs",
+    "split_geometry_for_tiled_uvs",
 ]

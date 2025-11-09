@@ -23,7 +23,6 @@ class UVBoundaryIntersection:
         """
     def __init__(self,
                  point: numpy.ndarray[list[float]],
-                 index0: int, index1: int,
                  v0: numpy.ndarray[list[float]],
                  v1: numpy.ndarray[list[float]],
                  crossed_edge: float,
@@ -34,8 +33,6 @@ class UVBoundaryIntersection:
         """
         A boundary point in 3D space with associated UV axis information.
         :param point: The 3D coordinate of the boundary point.
-        :param index0: The first vertex index of the face.
-        :param index1: The second vertex index of the face.
         :param v0 : The first 3D vertex of the edge. Reference to the original edge.
         :param v1 : The second 3D vertex of the edge. Reference to the original edge.
         :param crossed_edge: The crossed edge in UV coordinate space.
@@ -51,8 +48,6 @@ class UVBoundaryIntersection:
             raise ValueError("v0 and v1 must be 3D coordinates.")
 
         self.point = point
-        self.index0 = index0
-        self.index1 = index1
         self.v0 = v0
         self.v1 = v1
         self.crossed_edge = crossed_edge

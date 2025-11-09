@@ -19,7 +19,6 @@ class UVEdgeBoundary:
 
     def __init__(self,
                  crossed_edges: np.ndarray,
-                 index0: int, index1: int,
                  v0: np.ndarray[list[float]],
                  v1: np.ndarray[list[float]],
                  uv0: np.ndarray[list[float]],
@@ -31,8 +30,6 @@ class UVEdgeBoundary:
         ----------
         crossed_edges : np.ndarray
             Integer UV boundaries crossed along this edge (e.g., [1], or [-1, 0, 1]).
-        index0, index1 : int
-            The vertex indices of the original edge in the mesh.
         v0, v1 : np.ndarray
             The 3D coordinates of the edge endpoints.
         uv0, uv1 : np.ndarray
@@ -52,8 +49,6 @@ class UVEdgeBoundary:
             raise ValueError("v0 and v1 must be 3D coordinates.")
 
         self.crossed_edges = crossed_edges
-        self.index0 = index0
-        self.index1 = index1
         self.v0 = v0
         self.v1 = v1
         self.uv0 = uv0

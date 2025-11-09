@@ -1,7 +1,7 @@
-
 """A collection of mathematical utility functions."""
 import numpy
 import numpy as np
+
 
 def map_range(value: float, left_min: float, left_max: float, right_min: float, right_max: float) -> float:
     """
@@ -38,45 +38,6 @@ def lerp(start: numpy.ndarray[list[float]] | float,
     return (1 - t) * start + t * end
 
 
-def point_in_triangle(point: np.ndarray[list[float]],
-                      v1: np.ndarray[list[float]],
-                      v2: np.ndarray[list[float]],
-                      v0: np.ndarray[list[float]],
-                      tol: float = 1e-8) -> bool:
-    """
-    Check if a 3D point lies inside a triangle.
-
-    :param point: np.ndarray of shape (3,), the 3D point to test.
-    :param v0: np.ndarray of shape (3,), first vertex of the triangle.
-    :param v1: np.ndarray of shape (3,), second vertex of the triangle.
-    :param v2: np.ndarray of shape (3,), third vertex of the triangle.
-    :param tol: Tolerance for numerical precision.
-    :return: True if the point is inside the triangle (or on its edge), False otherwise.
-    """
-    # Vectors from v0
-    v0v1 = v1 - v0
-    v0v2 = v2 - v0
-    v0p = point - v0
-
-    # Compute dot products
-    d00 = np.dot(v0v1, v0v1)
-    d01 = np.dot(v0v1, v0v2)
-    d11 = np.dot(v0v2, v0v2)
-    d20 = np.dot(v0p, v0v1)
-    d21 = np.dot(v0p, v0v2)
-
-    # Compute barycentric coordinates
-    denom = d00 * d11 - d01 * d01
-    if np.abs(denom) < tol:
-        return False  # Degenerate triangle
-
-    v = (d11 * d20 - d01 * d21) / denom
-    w = (d00 * d21 - d01 * d20) / denom
-    u = 1 - v - w
-
-    # Point is inside triangle if all barycentric cords are between 0 and 1
-    return (-tol <= u <= 1 + tol) and (-tol <= v <= 1 + tol) and (-tol <= w <= 1 + tol)
-
 def is_valid_triangle(v0: np.ndarray[list[float]],
                       v1: np.ndarray[list[float]],
                       v2: np.ndarray[list[float]],
@@ -101,3 +62,28 @@ def is_valid_triangle(v0: np.ndarray[list[float]],
     area = np.linalg.norm(cross_product) / 2.0
 
     return area > tol
+
+
+def perpendicular_vector(v: np.ndarray[list[float]] | np.ndarray[tuple[float]]) -> np.ndarray[list[float]]:
+    """
+    Compute a vector that is perpendicular to the given 3D vector.
+    :param v: The input 3D vector.
+    :return: A 3D vector that is perpendicular to v.
+    """
+    if len(v) != 3:
+        raise ValueError("Input vector must be a 3D coordinate.")
+
+    if np.allclose(v, np.zeros(3)):
+        raise ValueError("Cannot compute a perpendicular vector to the zero vector.")
+
+    # Find a vector that is not parallel to v
+    if not np.isclose(v[0], 0) or not np.isclose(v[1], 0):
+        arbitrary = np.array([-v[1], v[0], 0])
+    else:
+        arbitrary = np.array([0, -v[2], v[1]])
+
+    # Compute the cross product to get a perpendicular vector
+    perp_vector = np.cross(v, arbitrary)
+    perp_vector_normalized = perp_vector / np.linalg.norm(perp_vector)
+
+    return perp_vector_normalized
