@@ -75,9 +75,9 @@ def find_uv_outside_bounds(
     result = []
     f = uv_coord_min
     while f < uv_coord_max:
-        if f >= 0.0 and f != uv_coord_min:
+        if f > 0.0:
             result.append(math.floor(f))
-        elif f < 0.0 and f != uv_coord_max:
+        elif f < 0.0:
             result.append(math.ceil(f))
 
         f += 1.0

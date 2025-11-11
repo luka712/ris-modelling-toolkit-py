@@ -113,6 +113,27 @@ class Geometry:
             pack_uvs[indices[2]]
         )
 
+    def remove_triangle(self, index):
+        """
+        Remove the triangle at the specified index.
+        :param index: The index of the triangle to remove.
+        """
+        if index < 0 or index >= self.get_triangle_count():
+            raise IndexError("Triangle index out of range.")
+
+        self.vertices = np.delete(self.vertices, slice(index * 3, index * 3 + 3), axis=0)
+        self.uvs = np.delete(self.uvs, slice(index * 3, index * 3 + 3), axis=0)
+
+    def print_triangle_info(self):
+        """
+        Print information about each triangle in the geometry.
+        """
+        for i in range(self.get_triangle_count()):
+            triangle = self.get_triangle(i)
+            print(f"Triangle {i}:")
+            print(f"  v0: {triangle.v0}, uv0: {triangle.uv0}")
+            print(f"  v1: {triangle.v1}, uv1: {triangle.uv1}")
+            print(f"  v2: {triangle.v2}, uv2: {triangle.uv2}")
 
 
 def trimesh_mesh_to_geometry(mesh: trimesh.Trimesh) -> Geometry:

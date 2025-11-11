@@ -1,5 +1,5 @@
 # Material for TestMesh with texture
 newmtl material
-Ka 0.5 0.5 0.5       # Ambient color (RGB 0–1)
-Kd 1.0 1.0 1.0        # Diffuse color (white, texture will override)
-map_Kd test.png   # Texture image
+Ka 0.5 0.5 0.5
+Kd 1.0 1.0 1.0
+map_Kd test.png
