@@ -1,5 +1,4 @@
-from .model import split_geometry_for_tiled_uvs
-
+from .model import uv_wrap_obj_model
 __all__ = [
-    "split_geometry_for_tiled_uvs",
+    "uv_wrap_obj_model",
 ]
